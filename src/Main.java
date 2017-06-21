@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -9,21 +12,24 @@ public class Main {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
-        Callable<Integer> task = () -> {
-            TimeUnit.SECONDS.sleep(1);
-            return 123;
-        };
-
         ExecutorService executor = Executors.newFixedThreadPool(1);
-        Future<Integer> future = executor.submit(task);
 
-        System.out.println("future done? " + future.isDone());
+        List<Callable<String>> callables = Arrays.asList(
+                () -> "task1",
+                () -> "task2",
+                () -> "task3");
 
-        int result = future.get();
-
-        System.out.println("future done? " + future.isDone());
-        System.out.println("result:" + result);
-
+        executor.invokeAll(callables)
+                .stream()
+                .map(future -> {
+                    try {
+                        return future.get();
+                    } catch (Exception e) {
+                        throw new IllegalStateException();
+                    }
+                })
+                .forEach(System.out::println);
+        
         try {
             System.out.println("attempt to shutdown executor");
             executor.shutdown();
