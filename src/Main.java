@@ -1,6 +1,4 @@
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by mitchelldevries.
@@ -9,13 +7,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
-            String threadName = Thread.currentThread().getName();
-            System.out.println("Hello " + threadName);
-        });
+        Callable<Integer> task = () -> {
+            TimeUnit.SECONDS.sleep(1);
+            return 123;
+        };
+
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        Future<Integer> future = executor.submit(task);
+
+        System.out.println("future done? " + future.isDone());
+
+        int result = future.get();
+
+        System.out.println("future done? " + future.isDone());
+        System.out.println("result:" + result);
 
         try {
             System.out.println("attempt to shutdown executor");
