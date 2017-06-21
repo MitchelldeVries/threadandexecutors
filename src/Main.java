@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by mitchelldevries.
  * <p>
@@ -8,11 +10,16 @@ public class Main {
     public static void main(String[] args) {
 
         Runnable task = () -> {
-            String threadName = Thread.currentThread().getName();
-            System.out.println("Hello " + threadName);
-        };
+            try {
+                String threadName = Thread.currentThread().getName();
+                System.out.println("Foo " + threadName);
+                TimeUnit.SECONDS.sleep(1);
+                System.out.println("Bar " + threadName);
 
-        task.run();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
 
         Thread thread = new Thread(task);
         thread.start();
