@@ -13,7 +13,7 @@ public class Main {
             try {
                 String threadName = Thread.currentThread().getName();
                 System.out.println("Foo " + threadName);
-                TimeUnit.SECONDS.sleep(1);
+                Thread.sleep(1000);
                 System.out.println("Bar " + threadName);
 
             } catch (InterruptedException e) {
