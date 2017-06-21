@@ -1,3 +1,5 @@
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,21 +11,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Runnable task = () -> {
-            try {
-                String threadName = Thread.currentThread().getName();
-                System.out.println("Foo " + threadName);
-                Thread.sleep(1000);
-                System.out.println("Bar " + threadName);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };
-
-        Thread thread = new Thread(task);
-        thread.start();
-
-        System.out.println("Done!");
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Hello " + threadName);
+        });
     }
 }
