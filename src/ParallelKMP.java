@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -51,6 +53,8 @@ public class ParallelKMP {
 
         int charsPerThread = text.length / numberOfThreads;
 
+        List<Callable<Integer>> callables = new ArrayList<>();
+
         int to = 0, from;
         for (int i = 0; i < numberOfThreads; i++) {
             to += charsPerThread;
@@ -61,9 +65,24 @@ public class ParallelKMP {
             }
 
             char[] textP = Arrays.copyOfRange(text, from, to);
-            executor.execute(task(textP));
+
+            callables.add(task(textP));
         }
+        try {
+            numberOfOccurrences = executor.invokeAll(callables).stream()
+                    .mapToInt(future -> {
+                        try {
+                            return future.get();
+                        } catch (Exception e) {
+                            throw new IllegalStateException(e);
+                        }
+                    })
+                    .sum();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             shutdown();
+        }
     }
 
     private void shutdown() {
@@ -86,8 +105,9 @@ public class ParallelKMP {
         return numberOfOccurrences;
     }
 
-    private Runnable task(char[] text) {
+    private Callable<Integer> task(char[] text) {
         return () -> {
+            int occurrences = 0;
             int i = 0;
             int j = 0;
             int textLength = text.length;
@@ -97,7 +117,7 @@ public class ParallelKMP {
                 if (text[i] == pattern[j]) {
                     if (j == patternLength - 1) {
                         i++;
-                        numberOfOccurrences++;
+                        occurrences++;
                     } else {
                         i++;
                         j++;
@@ -108,6 +128,7 @@ public class ParallelKMP {
                     i++;
                 }
             }
+            return occurrences;
         };
     }
 }
