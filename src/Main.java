@@ -6,18 +6,18 @@ import java.util.concurrent.TimeUnit;
  * ${PROJECT}
  */
 public class Main {
-    private static final String FILE = "Sample-text-file-20000kb.txt";
-    private static final String PATTERN = "boom";
+    private static final String FILE = "Sample-text-file-40000kb.txt";
+    private static final String PATTERN = "ep";
     private static long sequentialTime, kmpTime, parallelTime;
     private static int sequentialOccurrences, kmpOccurrences, parallelOccurrences;
-
+    
     public static void main(String[] args) {
 
-        for (int i = 0; i < 1000; i++) {
-            executeKMP();
-            executeSequential();
-            executeParallel();
-        }
+//        for (int i = 0; i < 1; i++) {
+        executeKMP();
+        executeParallel();
+        executeSequential();
+//        }
 
         System.out.println("- KMP");
         System.out.println("Amount of occurrences: " + kmpOccurrences);
@@ -51,15 +51,15 @@ public class Main {
     }
 
     private static void executeSequential() {
-        SeqTLKMP seqTLKMP = new SeqTLKMP(FILE, PATTERN.toCharArray());
+        TLKMP tlKMP = new TLKMP(FILE, PATTERN.toCharArray());
 
         Timer timer = new Timer();
         timer.start();
-        seqTLKMP.search(3);
+        tlKMP.search(3);
         timer.end();
 
         sequentialTime += timer.getExecutionTimeInNanoSeconds();
-        sequentialOccurrences = seqTLKMP.getAmountOfOccurrences();
+        sequentialOccurrences = tlKMP.getAmountOfOccurrences();
     }
 
     private static void executeParallel() {
@@ -67,7 +67,7 @@ public class Main {
 
         Timer timer = new Timer();
         timer.start();
-        parallelKMP.splitTextAndSearch(3);
+        parallelKMP.splitTextAndSearch(6);
         timer.end();
 
         parallelTime += timer.getExecutionTimeInNanoSeconds();

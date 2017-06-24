@@ -5,9 +5,11 @@ import java.io.FileReader;
 import java.util.Arrays;
 
 /**
- * Created by mitchelldevries.
- * <p>
- * ${PROJECT}
+ * @author Mitchell de Vries.
+ * @author Boyd Hogerheijde.
+ *
+ * This class reads a file from the specified path and returns the lines as a char array.
+ *
  */
 public class TextReader {
 
@@ -17,13 +19,11 @@ public class TextReader {
             FileReader fileReader = new FileReader(filePath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             File file = new File(filePath);
-//            System.out.println("File is: " + file.length() / (1024) + "KB\n");
-
             lines = Arrays.toString(bufferedReader.lines().toArray());
+            System.out.println("File is: " + file.length() / (1024) + "KB");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
         return lines.toCharArray();
     }
 }

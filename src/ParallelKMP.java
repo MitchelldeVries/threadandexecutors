@@ -64,12 +64,13 @@ public class ParallelKMP {
                 to = text.length;
             }
 
-            char[] textP = Arrays.copyOfRange(text, from, to);
-
-            callables.add(task(textP));
+            char[] partOfText = Arrays.copyOfRange(text, from, to);
+            callables.add(task(partOfText));
         }
+
         try {
-            numberOfOccurrences = executor.invokeAll(callables).stream()
+            numberOfOccurrences = executor.invokeAll(callables)
+                    .stream()
                     .mapToInt(future -> {
                         try {
                             return future.get();
@@ -87,7 +88,7 @@ public class ParallelKMP {
 
     private void shutdown() {
         try {
-//            System.out.println("Attempt to shutdown executor");
+            System.out.println("Attempt to shutdown executor");
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -97,7 +98,7 @@ public class ParallelKMP {
                 System.err.println("Cancel non-finished tasks");
             }
             executor.shutdownNow();
-//            System.out.println("Shutdown finished");
+            System.out.println("Shutdown finished");
         }
     }
 
