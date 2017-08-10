@@ -1,78 +1,36 @@
-import java.util.concurrent.TimeUnit;
-
 /**
- * Created by mitchelldevries.
+ * The Main class finds the number of occurrences of a pattern string
+ * in a text string.
  * <p>
- * ${PROJECT}
+ * This implementation uses the Knuth-Morris-Pratt substring search
+ * algorithm.
+ * <p>
+ *
+ * @author Mitchell de Vries
+ * @author Boyd Hogerheijde
  */
 public class Main {
-    private static final String FILE = "Sample-text-file-40000kb.txt";
-    private static final String PATTERN = "ep";
-    private static long sequentialTime, kmpTime, parallelTime;
-    private static int sequentialOccurrences, kmpOccurrences, parallelOccurrences;
-    
+    private static final String TXT = TextReader.read("Sample-text-file-40000kb.txt");
+    private static final String PAT = "Lorum";
+    private static int time;
+
+    /**
+     * Searches for the pattern string in the text string; and prints
+     * the number of occurrences of the pattern string in the text string
+     * and prints out the execution time.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
 
-//        for (int i = 0; i < 1; i++) {
-        executeKMP();
-        executeParallel();
-        executeSequential();
-//        }
+        KMP kmp = new KMP(PAT);
+        time += kmp.search(TXT);
 
-        System.out.println("- KMP");
-        System.out.println("Amount of occurrences: " + kmpOccurrences);
-        System.out.println("Execution took: " + TimeUnit.NANOSECONDS.toSeconds(kmpTime) + " seconds.");
-        System.out.println("Execution took: " + TimeUnit.NANOSECONDS.toMillis(kmpTime) + " miliseconds.");
-        System.out.println("Execution took: " + kmpTime + " nanoseconds.");
+        // print results
+        System.out.println("Text size: " + TXT.length() / (1024) + " KB");
+        System.out.println("Pattern: " + PAT);
+        System.out.println("Took: " + time + " ms.\n");
 
-        System.out.println("- Sequential KMP");
-        System.out.println("Amount of occurrences: " + sequentialOccurrences);
-        System.out.println("Execution took: " + TimeUnit.NANOSECONDS.toSeconds(sequentialTime) + " seconds.");
-        System.out.println("Execution took: " + TimeUnit.NANOSECONDS.toMillis(sequentialTime) + " miliseconds.");
-        System.out.println("Execution took: " + sequentialTime + " nanoseconds.");
-
-        System.out.println("- Parallel KMP");
-        System.out.println("Amount of occurrences: " + parallelOccurrences);
-        System.out.println("Execution took: " + TimeUnit.NANOSECONDS.toSeconds(parallelTime) + " seconds.");
-        System.out.println("Execution took: " + TimeUnit.NANOSECONDS.toMillis(parallelTime) + " miliseconds.");
-        System.out.println("Execution took: " + parallelTime + " nanoseconds.");
     }
-
-    private static void executeKMP() {
-        KMP sequentialKMP = new KMP(FILE, PATTERN);
-
-        Timer timer = new Timer();
-        timer.start();
-        sequentialKMP.search();
-        timer.end();
-
-        kmpTime += timer.getExecutionTimeInNanoSeconds();
-        kmpOccurrences = sequentialKMP.getNumberOfOccurrence();
-    }
-
-    private static void executeSequential() {
-        TLKMP tlKMP = new TLKMP(FILE, PATTERN.toCharArray());
-
-        Timer timer = new Timer();
-        timer.start();
-        tlKMP.search(3);
-        timer.end();
-
-        sequentialTime += timer.getExecutionTimeInNanoSeconds();
-        sequentialOccurrences = tlKMP.getAmountOfOccurrences();
-    }
-
-    private static void executeParallel() {
-        ParallelKMP parallelKMP = new ParallelKMP(FILE, PATTERN.toCharArray());
-
-        Timer timer = new Timer();
-        timer.start();
-        parallelKMP.splitTextAndSearch(6);
-        timer.end();
-
-        parallelTime += timer.getExecutionTimeInNanoSeconds();
-        parallelOccurrences = parallelKMP.getAmountOfOccurrences();
-    }
-
 
 }
