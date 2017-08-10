@@ -11,8 +11,7 @@
  */
 public class Main {
     private static final String TXT = TextReader.read("Sample-text-file-40000kb.txt");
-    private static final String PAT = "Lorum";
-    private static int time;
+    private static final String PAT = "ep";
 
     /**
      * Searches for the pattern string in the text string; and prints
@@ -22,14 +21,15 @@ public class Main {
      * @param args the command-line arguments
      */
     public static void main(String[] args) {
-
         KMP kmp = new KMP(PAT);
-        time += kmp.search(TXT);
+
+        kmp.search(TXT);
 
         // print results
-        System.out.println("Text size: " + TXT.length() / (1024) + " KB");
+        System.out.println("Text size: " + TXT.length() / (1024 * 1024) + " MB");
         System.out.println("Pattern: " + PAT);
-        System.out.println("Took: " + time + " ms.\n");
+        System.out.println("Occurrences: " + kmp.getOccurrences());
+        System.out.println("Took: " + kmp.getTime() + " ms.\n");
 
     }
 

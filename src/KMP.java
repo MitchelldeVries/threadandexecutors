@@ -16,6 +16,16 @@ public class KMP {
     private static final int R = 256;       // the radix, the alphabet size.
     private int[][] dfa;       // the KMP automoton
     private String pat;        // the pattern string
+    private int occurrences;
+    private long time;
+
+    public long getTime() {
+        return time;
+    }
+
+    public int getOccurrences() {
+        return occurrences;
+    }
 
     /**
      * Pre-processes the pattern string.
@@ -38,15 +48,12 @@ public class KMP {
     }
 
     /**
-     * Returns the execution time it took to find all
-     * the number of occurrences of the pattern string
+     * Searches for all occurrences of the pattern string
      * in the text string.
      *
      * @param txt the text string
-     * @return the execution time it took to find all
-     * the number of occurrences.
      */
-    public long search(String txt) {
+    public void search(String txt) {
 
         // simulate operation of DFA on text
         int m = pat.length();
@@ -56,10 +63,13 @@ public class KMP {
         long start = System.nanoTime();
         for (i = 0, j = 0; i < n && j < m; i++) {
             j = dfa[txt.charAt(i)][j];
-            if (j == m) j = 0; // found, look for new match.
+            if (j == m) {
+                j = 0; // found, look for new match.
+                occurrences++;
+            }
         }
         long end = System.nanoTime();
 
-        return TimeUnit.NANOSECONDS.toMillis(end - start);
+        time = TimeUnit.NANOSECONDS.toMillis(end - start);
     }
 }
