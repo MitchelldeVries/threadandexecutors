@@ -16,12 +16,6 @@ public class KMPRunnable implements Runnable {
 
     @Override
     public void run() {
-        // Time measurement of method execution.
-        long startTime = System.nanoTime();
         kmp.search(text);
-        long endTime = System.nanoTime();
-        long timeElapsed = endTime - startTime;
-
-        System.out.println("Milliseconds: " + timeElapsed / 1_000_000);
     }
 }
