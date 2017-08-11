@@ -1,75 +1,47 @@
-import java.util.concurrent.TimeUnit;
-
 /**
- * Reads in two strings, the pattern and the input text, and
- * searches for the pattern in the input text using a version
- * of the KMP algorithm.
- * The version takes time as space proportional to N + M R
- * in the worst case, where N is the length of the text string,
- * M is the length of the pattern, and R is the alphabet size.
+ * Parallel Computing KMP substring search.
  *
  * @author Mitchell de Vries
  * @author Boyd Hogerheijde
  */
 public class KMP {
 
-    private static final int R = 256;       // the radix, the alphabet size.
-    private int[][] dfa;       // the KMP automoton
-    private String pat;        // the pattern string
-    private int occurrences;
-    private long time;
+    private String pattern;
+    private int[][] dfa;
 
-    public long getTime() {
-        return time;
-    }
+    public KMP(String pattern) {
+        this.pattern = pattern;
 
-    public int getOccurrences() {
-        return occurrences;
-    }
+        int M = pattern.length();
+        int R = 256;
 
-    /**
-     * Pre-processes the pattern string.
-     *
-     * @param pat the pattern string
-     */
-    public KMP(String pat) {
-        this.pat = pat;
+        dfa = new int[R][M];
+        dfa[pattern.charAt(0)][0] = 1;
 
-        // build DFA from pattern
-        int m = pat.length();
-        dfa = new int[R][m];
-        dfa[pat.charAt(0)][0] = 1;
-        for (int x = 0, j = 1; j < m; j++) {
-            for (int c = 0; c < R; c++)
-                dfa[c][j] = dfa[c][x];     // Copy mismatch cases. 
-            dfa[pat.charAt(j)][j] = j + 1;   // Set match case. 
-            x = dfa[pat.charAt(j)][x];     // Update restart state. 
+        for (int X = 0, j = 1; j < M; j++) {
+            for (int c = 0; c < R; c++) {
+                dfa[c][j] = dfa[c][X];
+                dfa[pattern.charAt(j)][j] = j + 1;
+                X = dfa[pattern.charAt(j)][X];
+            }
         }
     }
 
-    /**
-     * Searches for all occurrences of the pattern string
-     * in the text string.
-     *
-     * @param txt the text string
-     */
-    public void search(String txt) {
-
-        // simulate operation of DFA on text
-        int m = pat.length();
-        int n = txt.length();
+    public int search(String text) {
         int i, j;
+        int N = text.length();
+        int M = pattern.length();
+        int occurrences = 0;
 
-        long start = System.nanoTime();
-        for (i = 0, j = 0; i < n && j < m; i++) {
-            j = dfa[txt.charAt(i)][j];
-            if (j == m) {
-                j = 0; // found, look for new match.
+        for (i = 0, j = 0; i < N && j < M; i++) {
+            j = dfa[text.charAt(i)][j];
+
+            if (j == M) {
+                j = 0;
                 occurrences++;
             }
         }
-        long end = System.nanoTime();
 
-        time = TimeUnit.NANOSECONDS.toMillis(end - start);
+        return occurrences;
     }
 }
