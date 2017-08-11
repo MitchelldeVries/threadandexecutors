@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.OptionalDouble;
+
 /**
  * Parallel Computing KMP substring search.
  *
@@ -10,14 +13,22 @@ public class KMPSerialTest {
     private static final String PATTERN = "nec ferm";
 
     public static void main(String[] args) {
-        KMP kmp = new KMP(PATTERN);
+        long[] timings = new long[1000];
 
-        // Time measurement of method execution.
-        long startTime = System.nanoTime();
-        kmp.search(TEXT);
-        long endTime = System.nanoTime();
-        long timeElapsed = endTime - startTime;
+        for (int i = 0; i < 1000; i++) {
+            KMP kmp = new KMP(PATTERN);
 
-        System.out.println("Milliseconds: " + (timeElapsed / 1_000_000));
+            // Time measurement of method execution.
+            long startTime = System.nanoTime();
+            kmp.search(TEXT);
+            long endTime = System.nanoTime();
+            long timeElapsed = (endTime - startTime) / 1_000_000;
+
+            timings[i] = timeElapsed;
+        }
+
+        OptionalDouble optionalAverage = Arrays.stream(timings).average();
+        double averageTime = optionalAverage.isPresent() ? optionalAverage.getAsDouble() : -1;
+        System.out.println("Average time for serial execution: " + averageTime + "ms");
     }
 }
