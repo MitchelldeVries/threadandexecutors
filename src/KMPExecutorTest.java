@@ -1,8 +1,10 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Parallel Computing KMP substring search.
@@ -10,9 +12,9 @@ import java.util.concurrent.Executors;
  * @author Mitchell de Vries
  * @author Boyd Hogerheijde
  */
-public class KMPMultithreadedTest {
+public class KMPExecutorTest {
 
-    private static final String TEXT = TextReader.read("Sample-text-file-80000kb.txt");
+    private static final String TEXT = TextReader.read("Sample-text-file-5000kb.txt");
     private static final String PATTERN = "nec ferm";
     private static final int NUM_THREADS = 2;
 
@@ -22,19 +24,25 @@ public class KMPMultithreadedTest {
 
         for (int j = 0; j < 1000; j++) {
             List<String> partitions = StringUtils.splitText(TEXT, NUM_THREADS);
+            List<Runnable> runnables = new ArrayList<>();
 
-            ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
             long startTime = System.nanoTime();
+
             for (int i = 0; i < NUM_THREADS; i++) {
                 String text = partitions.get(i);
 
-                KMPRunnable runnable = new KMPRunnable(PATTERN, text);
-                executorService.execute(runnable);
+                runnables.add(new KMPRunnable(PATTERN, text));
             }
 
+            ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+
+            runnables.forEach(executorService::execute);
+
             executorService.shutdown();
-            while (!executorService.isTerminated()) {
-                // do nothing..
+            try {
+                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             long endTime = System.nanoTime();
