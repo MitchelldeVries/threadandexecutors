@@ -1,10 +1,12 @@
+import java.io.Serializable;
+
 /**
  * Parallel Computing KMP substring search.
  *
  * @author Mitchell de Vries
  * @author Boyd Hogerheijde
  */
-public class KMP {
+public class KMP implements Serializable {
 
     private String pattern;
     private int[][] dfa;
